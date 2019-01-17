@@ -17,8 +17,17 @@ import org.opencv.core.Mat;
 public class MainActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
 
     private static final String TAG = "MainActivity";
-    JavaCameraView javaCameraView;
-    Mat mRgba;
+    static {
+        System.loadLibrary("native-lib");
+        System.loadLibrary("opencv_java3");
+        if(OpenCVLoader.initDebug()){
+            Log.d(TAG, "OpenCV successfully loaded");
+        }
+        else{
+            Log.d(TAG, "not loaded");
+        }
+    }
+
     /*
     Dedicated for the onResume method
      */
@@ -38,16 +47,9 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         }
     };
     // Used to load the 'native-lib' library on application startup.
-    static {
-        System.loadLibrary("native-lib");
-        System.loadLibrary("opencv_java3");
-        if(OpenCVLoader.initDebug()){
-            Log.d(TAG, "OpenCV successfully loaded");
-        }
-        else{
-            Log.d(TAG, "not loaded");
-        }
-    }
+
+    Mat mRgba;
+    JavaCameraView javaCameraView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,10 +58,11 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
         // Example of a call to a native method
         //TextView tv = (TextView) findViewById(R.id.sample_text);
-        //javaCameraView = (JavaCameraView) findViewById(R.id.java_camera_view);
-        //javaCameraView.setVisibility(SurfaceView.VISIBLE);
-        //javaCameraView.setCvCameraViewListener(this);
+        javaCameraView = (JavaCameraView) findViewById(R.id.java_camera_view);
+        javaCameraView.setVisibility(SurfaceView.VISIBLE);
+        javaCameraView.setCvCameraViewListener(this);
         //tv.setText(stringFromJNI());
+        Log.d(TAG, "on Create: done");
     }
     @Override
     protected void onPause(){
@@ -77,12 +80,14 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     @Override
     protected void onResume(){
         super.onResume();
+        System.loadLibrary("native-lib");
+        System.loadLibrary("opencv_java3");
         if(OpenCVLoader.initDebug()){
-            Log.d(TAG, "OpenCV successfully loaded");
+            Log.d(TAG, "on Resume: OpenCV successfully loaded");
             mLoaderCallBack.onManagerConnected(LoaderCallbackInterface.SUCCESS);
         }
         else{
-            Log.d(TAG, "not loaded");
+            Log.d(TAG, "on Resume: not loaded");
         }   OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_4_0, this, mLoaderCallBack);
     }
 

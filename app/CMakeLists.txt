@@ -7,6 +7,8 @@ cmake_minimum_required(VERSION 3.4.1)
 
 set(CMAKE_VERBOSE_MAKEFILE on)
 
+set(OpenCV_DIR "../openCVLibrary344/src/sdk/native/jni")
+
 include_directories(O:/OpenCV-android-sdk/sdk/native/jni/include)
 
 # Creates and names a library, sets it as either STATIC
@@ -47,4 +49,8 @@ find_library( # Sets the name of the path variable.
 
 target_link_libraries( native-lib
                     lib_opencv
-                    $\{log-lib} )
+                    ${log-lib} )
+
+find_package(OpenCV REQUIRED)
+message(STATUS "OpenCV libraries: ${OpenCV_LIBS}")
+target_link_libraries(native-lib lib_opencv ${OpenCV_LIBS})
