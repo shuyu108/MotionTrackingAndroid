@@ -13,8 +13,9 @@
 # Built application files
 /*/build/
 
-# openCV jni libs
+# openCV large libs
 app/src/main/jniLibs/
+openCVLibrary344/src/sdk/
 
 # Crashlytics configuations
 com_crashlytics_export_strings.xml
