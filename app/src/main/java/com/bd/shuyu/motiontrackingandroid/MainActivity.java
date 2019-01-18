@@ -4,14 +4,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceView;
-import android.widget.TextView;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.JavaCameraView;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
-import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
@@ -29,7 +27,10 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         }
     }
 
-    Mat mRgba;
+    Mat imgRgba;
+    Mat imgGray;
+    Mat imgCanny;
+    Mat imgHSV;
     JavaCameraView javaCameraView;
 
     /*
@@ -103,22 +104,30 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     @Override
     public void onCameraViewStarted(int w, int h){
         //we have 4 channels here
-        mRgba = new Mat(w, h, CvType.CV_8UC4);
+        imgRgba = new Mat(h, w, CvType.CV_8UC4);
+        imgGray = new Mat(h, w, CvType.CV_8UC1);
+        imgCanny = new Mat(h, w, CvType.CV_8UC1);
+        imgHSV = new Mat(h, w, CvType.CV_8UC4);
+
     }
 
     @Override
     public void onCameraViewStopped(){
-        mRgba.release();
+        imgRgba.release();
     }
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame){
-        mRgba = inputFrame.rgba();
-        return mRgba;
+        imgRgba = inputFrame.rgba();
+        //Imgproc.cvtColor(imgRgba, imgGray, Imgproc.COLOR_RGB2GRAY);
+        Imgproc.Canny(imgGray, imgCanny, 50, 150);
+        Imgproc.cvtColor(imgRgba, imgHSV, Imgproc.COLOR_RGB2HSV);
 
-        /*Mat rgbaT = mRgba.t();
-        Core.flip(mRgba.t(), rgbaT, 1);
-        Imgproc.resize(rgbaT, rgbaT, mRgba.size());
+        return imgHSV;
+
+        /*Mat rgbaT = imgRgba.t();
+        Core.flip(imgRgba.t(), rgbaT, 1);
+        Imgproc.resize(rgbaT, rgbaT, imgRgba.size());
         return rgbaT;*/
 
     }
