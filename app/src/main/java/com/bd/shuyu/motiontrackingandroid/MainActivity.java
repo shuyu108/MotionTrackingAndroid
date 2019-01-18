@@ -11,14 +11,15 @@ import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.JavaCameraView;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
 
 public class MainActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
 
     private static final String TAG = "MainActivity";
     static {
-        System.loadLibrary("native-lib");
         System.loadLibrary("opencv_java3");
         if(OpenCVLoader.initDebug()){
             Log.d(TAG, "OpenCV successfully loaded");
@@ -27,6 +28,9 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             Log.d(TAG, "not loaded");
         }
     }
+
+    Mat mRgba;
+    JavaCameraView javaCameraView;
 
     /*
     Dedicated for the onResume method
@@ -47,9 +51,6 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         }
     };
     // Used to load the 'native-lib' library on application startup.
-
-    Mat mRgba;
-    JavaCameraView javaCameraView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +81,6 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     @Override
     protected void onResume(){
         super.onResume();
-        System.loadLibrary("native-lib");
         System.loadLibrary("opencv_java3");
         if(OpenCVLoader.initDebug()){
             Log.d(TAG, "on Resume: OpenCV successfully loaded");
@@ -88,7 +88,8 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         }
         else{
             Log.d(TAG, "on Resume: not loaded");
-        }   OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_4_0, this, mLoaderCallBack);
+        }
+        //OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_4_0, this, mLoaderCallBack);
     }
 
     /**
@@ -102,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     @Override
     public void onCameraViewStarted(int w, int h){
         //we have 4 channels here
-        mRgba = new Mat(h, w, CvType.CV_8UC4);
+        mRgba = new Mat(w, h, CvType.CV_8UC4);
     }
 
     @Override
@@ -114,5 +115,11 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame){
         mRgba = inputFrame.rgba();
         return mRgba;
+
+        /*Mat rgbaT = mRgba.t();
+        Core.flip(mRgba.t(), rgbaT, 1);
+        Imgproc.resize(rgbaT, rgbaT, mRgba.size());
+        return rgbaT;*/
+
     }
 }
