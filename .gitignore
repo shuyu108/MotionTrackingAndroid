@@ -14,7 +14,6 @@
 /*/build/
 
 # openCV large libs
-app/src/main/jniLibs/
 openCVLibrary344/src/sdk/
 
 # Crashlytics configuations
