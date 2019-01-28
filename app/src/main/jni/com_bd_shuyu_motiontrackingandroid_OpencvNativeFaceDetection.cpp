@@ -1,7 +1,7 @@
 #include "com_bd_shuyu_motiontrackingandroid_OpencvNativeFaceDetection.h"
 
 JNIEXPORT jint JNICALL Java_com_bd_shuyu_motiontrackingandroid_OpencvNativeFaceDetection_faceDetection
-  (JNIEnv *, jclass, jlong addrRgba) {
+  (JNIEnv * env, jclass clazz, jlong addrRgba) {
     Mat& frame = *(Mat*)addrRgba;
 
     int retVal = detect(frame);
@@ -52,6 +52,3 @@ JNIEXPORT jint JNICALL Java_com_bd_shuyu_motiontrackingandroid_OpencvNativeFaceD
       }
       return 0;
   }
-#ifdef __cplusplus
-
-#endif
