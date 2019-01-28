@@ -112,7 +112,11 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     public void onCameraViewStarted(int w, int h){
         //we have 4 channels here
         mRgba = new Mat(h, w, CvType.CV_8UC4);
-        mGray = new Mat(h, w, CvType.CV_8UC1);
+
+
+        //mGray = new Mat(h, w, CvType.CV_8UC1);
+
+
     }
 
     @Override
@@ -124,7 +128,6 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame){
         mRgba = inputFrame.rgba();
 
-        //OpencvNativeCls.cvtGray(mRgba.getNativeObjAddr(), mGray.getNativeObjAddr());
         int debugInt = OpencvNativeFaceDetection.faceDetection(mRgba.getNativeObjAddr());
 
         if(debugInt == 1){
@@ -132,6 +135,8 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         }
 
         return mRgba;
+
+        //OpencvNativeCls.cvtGray(mRgba.getNativeObjAddr(), mGray.getNativeObjAddr());
 
         /*Mat rgbaT = mRgba.t();
         Core.flip(mRgba.t(), rgbaT, 1);
