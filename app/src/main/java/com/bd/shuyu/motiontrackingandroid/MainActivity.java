@@ -124,9 +124,14 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame){
         mRgba = inputFrame.rgba();
 
-        OpencvNativeCls.cvtGray(mRgba.getNativeObjAddr(), mGray.getNativeObjAddr());
+        //OpencvNativeCls.cvtGray(mRgba.getNativeObjAddr(), mGray.getNativeObjAddr());
+        int debugInt = OpencvNativeFaceDetection.faceDetection(mRgba.getNativeObjAddr());
 
-        return mGray;
+        if(debugInt == 1){
+            Log.d(TAG, "faceDetection(): xml loading failed");
+        }
+
+        return mRgba;
 
         /*Mat rgbaT = mRgba.t();
         Core.flip(mRgba.t(), rgbaT, 1);

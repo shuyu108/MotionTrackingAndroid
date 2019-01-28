@@ -1,23 +1,25 @@
 #include "com_bd_shuyu_motiontrackingandroid_OpencvNativeFaceDetection.h"
 
-JNIEXPORT void JNICALL Java_com_bd_shuyu_motiontrackingandroid_OpencvNativeFaceDetection_faceDetection
+JNIEXPORT jint JNICALL Java_com_bd_shuyu_motiontrackingandroid_OpencvNativeFaceDetection_faceDetection
   (JNIEnv *, jclass, jlong addrRgba) {
     Mat& frame = *(Mat*)addrRgba;
 
-    detect(frame);
+    int retVal = detect(frame);
+
+    return (jint) retVal;
 
 }
 
-  void detect(Mat& frame) {
+  int detect(Mat& frame) {
     //Haar classifier
-      String face_cascade_name = "../../../data/haarcascade_frontalface_alt.xml";
-      String eyes_cascade_name = "../../../data/haarcascade_eye_tree_eyeglasses.xml";
+      String face_cascade_name = "/storage/emulated/0/data/haarcascade_frontalface_alt.xml";
+      String eyes_cascade_name = "/storage/emulated/0/data/haarcascade_eye_tree_eyeglasses.xml";
       CascadeClassifier face_cascade;
       CascadeClassifier eyes_cascade;
       String window_name = "Capture - Face detection";
 
-      if( !face_cascade.load( face_cascade_name ) ){ printf("--(!)Error loading face cascade\n"); return ; };
-      if( !eyes_cascade.load( eyes_cascade_name ) ){ printf("--(!)Error loading eyes cascade\n"); return ; };
+      if( !face_cascade.load( face_cascade_name ) ){ printf("--(!)Error loading face cascade\n"); return 1; };
+      if( !eyes_cascade.load( eyes_cascade_name ) ){ printf("--(!)Error loading eyes cascade\n"); return 1; };
 
 
 
@@ -48,8 +50,8 @@ JNIEXPORT void JNICALL Java_com_bd_shuyu_motiontrackingandroid_OpencvNativeFaceD
               circle( frame, eye_center, radius, Scalar( 255, 0, 0 ), 4, 8, 0 );
           }
       }
+      return 0;
   }
-
 #ifdef __cplusplus
 
 #endif
