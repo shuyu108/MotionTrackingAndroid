@@ -2,6 +2,6 @@ package com.bd.shuyu.motiontrackingandroid;
 
 public class OpencvNativeFaceDetection {
 
-    public native static void faceDetection(long addrRgba);
+    public native static int faceDetection(long addrRgba);
 
 }
