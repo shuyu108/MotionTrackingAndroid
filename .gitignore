@@ -6,7 +6,6 @@
 /.idea/modules.xml
 /.idea/workspace.xml
 .DS_Store
-/build
 /captures
 .externalNativeBuild
 app/Android.mk
@@ -16,6 +15,8 @@ app/Android.mk
 
 # openCV large libs
 openCVLibrary344/src/sdk/
+app/src/main/jniLibs/
+app/src/main/objs/
 
 # Crashlytics configuations
 com_crashlytics_export_strings.xml
