@@ -27,7 +27,7 @@ android {
     }
     //if automatic ndk-build is not called, throws error:"more than one .so is found in x86_64"
     sourceSets.main.jni.srcDirs = [] //disable automatic ndk-build call
-    sourceSets.main.jniLibs.srcDir 'src/main/jniLibs'
+    //sourceSets.main.jniLibs.srcDir 'src/main/jniLibs'
 
     /*
     // call regular ndk-build(.cmd) script from app directory
@@ -51,13 +51,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
+    /*
     externalNativeBuild {
         ndkBuild {
             path file("Android.mk")
         }
     }
-
+    */
 
 
     /*externalNativeBuild {

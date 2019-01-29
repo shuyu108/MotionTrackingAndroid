@@ -15,8 +15,8 @@ extern "C" {
  * Signature: (J)V
  */
 
- void detect(Mat& frame);
-JNIEXPORT void JNICALL Java_com_bd_shuyu_motiontrackingandroid_OpencvNativeFaceDetection_faceDetection
+ int detect(Mat& frame);
+JNIEXPORT jint JNICALL Java_com_bd_shuyu_motiontrackingandroid_OpencvNativeFaceDetection_faceDetection
   (JNIEnv *, jclass, jlong);
 
 #ifdef __cplusplus
