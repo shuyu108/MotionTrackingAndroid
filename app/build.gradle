@@ -27,7 +27,7 @@ android {
     }
     //if automatic ndk-build is not called, throws error:"more than one .so is found in x86_64"
     sourceSets.main.jni.srcDirs = [] //disable automatic ndk-build call
-    //sourceSets.main.jniLibs.srcDir 'src/main/jniLibs'
+    sourceSets.main.jniLibs.srcDir 'src/main/jniLibs'
 
     /*
     // call regular ndk-build(.cmd) script from app directory
@@ -67,17 +67,6 @@ android {
         }
     }*/
     //sourceSets { main { jni.srcDirs = ['src/main/jni', 'src/main/jniLibs/'] } }
-
-    packagingOptions {
-        pickFirst 'lib/x86_64/libMyLibs.so'
-        pickFirst 'lib/x86/libMyLibs.so'
-        pickFirst 'lib/armeabi-v7a/libMyLibs.so'
-        pickFirst 'lib/arm64-v8a/libMyLibs.so'
-        pickFirst 'lib/x86_64/libc++_shared.so'
-        pickFirst 'lib/x86/libc++_shared.so'
-        pickFirst 'lib/armeabi-v7a/libc++_shared.so'
-        pickFirst 'lib/arm64-v8a/libc++_shared.so'
-    }
 }
 
 dependencies {

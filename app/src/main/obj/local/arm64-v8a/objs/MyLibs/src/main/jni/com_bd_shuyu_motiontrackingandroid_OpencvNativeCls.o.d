@@ -1,6 +1,6 @@
 ./obj/local/arm64-v8a/objs/MyLibs/src/main/jni/com_bd_shuyu_motiontrackingandroid_OpencvNativeCls.o: \
-  O:/Documents/Android_Projects/MotionTrackingAndroid/app/src/main/jni/com_bd_shuyu_motiontrackingandroid_OpencvNativeCls.cpp \
-  O:/Documents/Android_Projects/MotionTrackingAndroid/app/src/main/jni/com_bd_shuyu_motiontrackingandroid_OpencvNativeCls.h \
+  ../../src/main/jni/com_bd_shuyu_motiontrackingandroid_OpencvNativeCls.cpp \
+  ../../src/main/jni/com_bd_shuyu_motiontrackingandroid_OpencvNativeCls.h \
   O:/OpenCV-android-sdk/sdk/native/jni/include\opencv2/opencv.hpp \
   O:/OpenCV-android-sdk/sdk/native/jni/include\opencv2/opencv_modules.hpp \
   O:/OpenCV-android-sdk/sdk/native/jni/include\opencv2/core.hpp \
@@ -154,7 +154,7 @@
   O:/OpenCV-android-sdk/sdk/native/jni/include\opencv2/videostab/wobble_suppression.hpp \
   O:/OpenCV-android-sdk/sdk/native/jni/include\opencv2/videostab/ring_buffer.hpp
 
-O:/Documents/Android_Projects/MotionTrackingAndroid/app/src/main/jni/com_bd_shuyu_motiontrackingandroid_OpencvNativeCls.h:
+../../src/main/jni/com_bd_shuyu_motiontrackingandroid_OpencvNativeCls.h:
 
 O:/OpenCV-android-sdk/sdk/native/jni/include\opencv2/opencv.hpp:
 
