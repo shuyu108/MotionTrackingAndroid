@@ -6,7 +6,6 @@
 /.idea/modules.xml
 /.idea/workspace.xml
 .DS_Store
-/build
 /captures
 .externalNativeBuild
 
@@ -15,9 +14,8 @@
 
 # openCV large libs
 openCVLibrary344/src/sdk/
-
-# ndk-build libs
 app/src/main/jniLibs/
+app/src/main/objs/
 
 # Crashlytics configuations
 com_crashlytics_export_strings.xml
