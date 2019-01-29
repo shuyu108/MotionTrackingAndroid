@@ -16,6 +16,9 @@
 # openCV large libs
 openCVLibrary344/src/sdk/
 
+# ndk-build libs
+app/src/main/jniLibs/
+
 # Crashlytics configuations
 com_crashlytics_export_strings.xml
 
