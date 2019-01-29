@@ -9,6 +9,7 @@
 /build
 /captures
 .externalNativeBuild
+app/Android.mk
 
 # Built application files
 /*/build/
