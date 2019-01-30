@@ -17,6 +17,10 @@
 app/src/main/jniLibs/
 openCVLibrary344/src/sdk/
 
+# gradle
+app/build.gradle
+openCVLibrary344/build.gradle
+
 # Crashlytics configuations
 com_crashlytics_export_strings.xml
 

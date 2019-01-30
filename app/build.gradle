@@ -23,12 +23,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    externalNativeBuild {
-        cmake {
-            path "CMakeLists.txt"
+    sourceSets.main.jni.srcDirs = []
+    sourceSets.main.jniLibs.srcDir 'src/main/jniLibs'
+    /*externalNativeBuild {
+         {
+            path "Android.mk"
 
         }
-    }
+    }*/
     //sourceSets { main { jni.srcDirs = ['src/main/jni', 'src/main/jniLibs/'] } }
 }
 
