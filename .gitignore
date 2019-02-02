@@ -16,7 +16,7 @@ app/Android.mk
 # openCV large libs
 openCVLibrary344/src/sdk/
 app/src/main/jniLibs/
-app/src/main/objs/
+app/src/main/obj/
 
 # Crashlytics configuations
 com_crashlytics_export_strings.xml
