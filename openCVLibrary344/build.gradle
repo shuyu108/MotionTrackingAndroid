@@ -10,6 +10,7 @@ android {
 
         versionCode 3440
         versionName "3.4.4"
+
     }
 
     buildTypes {
@@ -17,6 +18,7 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
+
     }
 
     externalNativeBuild {
@@ -27,7 +29,7 @@ android {
     sourceSets {
         main {
             jni.srcDirs = [jni.srcDirs, 'src/main/sdk/jni/include']
-            jniLibs.srcDirs = [jniLibs.srcDirs, 'src/main/jniLibs']
+            jniLibs.srcDirs = [jniLibs.srcDirs, 'src/main//sdk/libs']
             //jni.srcDirs = []
             //jniLibs.srcDirs = []
         }

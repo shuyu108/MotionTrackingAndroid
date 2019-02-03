@@ -3,11 +3,11 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
 #opencv
-OPENCVROOT = F:\opencv_install\opencv-android-sdk
+OPENCVROOT = ../openCVLibrary344/src/main/sdk
 OPENCV_CAMERA_MODULES:=on
 OPENCV_INSTALL_MODULES:=ON
 OPENCV_LIB_TYPE:=SHARED
-include $(OPENCVROOT)/sdk/native/jni/OpenCV.mk
+include $(OPENCVROOT)/jni/OpenCV.mk
 
 
 LOCAL_SRC_FILES := src/main/jni/com_bd_shuyu_motiontrackingandroid_OpencvNativeCls.cpp \
