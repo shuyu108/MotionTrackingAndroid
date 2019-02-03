@@ -8,14 +8,14 @@
 .DS_Store
 /captures
 .externalNativeBuild
-app/Android.mk
+*/Android.mk
 
 # Built application files
 /*/build/
 
 # openCV large libs
 openCVLibrary344/src/sdk/
-app/src/main/jniLibs/
+*/src/main/jniLibs/
 app/src/main/obj/
 
 # Crashlytics configuations

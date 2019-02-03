@@ -4,20 +4,12 @@ android {
     compileSdkVersion 28
     buildToolsVersion "28.0.3"
 
-
-
     defaultConfig {
         minSdkVersion 23
         compileSdkVersion 28
 
         versionCode 3440
         versionName "3.4.4"
-
-        /*externalNativeBuild {
-            cmake {
-                cppFlags "-frtti -fexceptions"
-            }
-        }*/
     }
 
     buildTypes {
@@ -26,11 +18,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
-    /*externalNativeBuild {
-        cmake {
-            path "CMakeLists.txt"
-        }
-    }*/
+
     externalNativeBuild {
         ndkBuild {
             path file("Android.mk")
@@ -38,13 +26,10 @@ android {
     }
     sourceSets {
         main {
-            jni.srcDirs = [jni.srcDirs, 'src/sdk/native/jni/include']
-            jniLibs.srcDirs = [jniLibs.srcDirs, 'src/sdk/native/3rdparty/libs', 'src/sdk/native/libs']
+            jni.srcDirs = [jni.srcDirs, 'src/main/sdk/jni/include']
+            jniLibs.srcDirs = [jniLibs.srcDirs, 'src/main/jniLibs']
             //jni.srcDirs = []
             //jniLibs.srcDirs = []
         }
     }
-
-
-
 }
