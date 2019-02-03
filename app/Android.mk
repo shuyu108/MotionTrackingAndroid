@@ -3,7 +3,7 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
 #opencv
-OPENCVROOT = ../openCVLibrary344/src/main/sdk
+OPENCVROOT = ../openCVLibrary344/src/sdk
 OPENCV_CAMERA_MODULES:=on
 OPENCV_INSTALL_MODULES:=ON
 OPENCV_LIB_TYPE:=SHARED
