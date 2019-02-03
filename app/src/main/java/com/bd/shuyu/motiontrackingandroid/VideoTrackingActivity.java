@@ -94,14 +94,25 @@ public class VideoTrackingActivity  extends AppCompatActivity {
 
 
         Rect2d roiBox = new Rect2d(334, 13, 200, 333);
-        Imgproc.rectangle(frame, new Point(roiBox.x, roiBox.y), new Point(roiBox.x + roiBox.width, roiBox.y + roiBox.height),
-                new Scalar( 255, 0, 0), 2, 1);
+        Point roiPt1 = new Point(roiBox.x, roiBox.y);
+        Point roiPt2 = new Point(roiBox.x + roiBox.width, roiBox.y + roiBox.height);
+        Scalar roiColor = new Scalar( 255, 0, 0)
 
-
-
+        Imgproc.rectangle(frame, roiPt1, roiPt2, roiColor,2, 1);
         Utils.matToBitmap(frame, bm);
-
         videoView.setImageBitmap(bm);
+        while(video.read(frame)){
+
+            double timer = (double) Core.getTickCount();
+
+
+
+
+
+
+        }
+
+
     }
 
 
