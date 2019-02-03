@@ -17,6 +17,8 @@ extern "C" {
  * Method:    objectTracker
  * Signature: (J)I
  */
+
+ int track(Mat& frame);
 JNIEXPORT jint JNICALL Java_com_bd_shuyu_motiontrackingandroid_OpencvNativeObjectTracker_objectTracker
   (JNIEnv *, jclass, jlong);
 
