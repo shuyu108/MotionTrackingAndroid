@@ -14,7 +14,7 @@
 # references
 /refs/*/bin
 /refs/*/obj
-/data_archive/Zhuge_Trim.mp4
+#/data_archive/Zhuge_Trim.mp4
 # Built application files
 /*/build/
 
