@@ -9,12 +9,15 @@
 /captures
 .externalNativeBuild
 #*/Android.mk
+
 /app/src/main/AndroidManifest.xml
 
 # references
 /refs/*/bin
 /refs/*/obj
 /data_archive/Zhuge_Trim.mp4
+=======
+
 # Built application files
 /*/build/
 
