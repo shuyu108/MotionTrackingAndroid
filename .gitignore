@@ -9,6 +9,11 @@
 /captures
 .externalNativeBuild
 #*/Android.mk
+/app/src/main/AndroidManifest.xml
+
+# references
+/refs/*/bin
+/refs/*/obj
 
 # Built application files
 /*/build/
