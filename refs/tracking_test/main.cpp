@@ -62,7 +62,7 @@ int main(int argc, char **argv)
     Rect2d bbox(334, 13, 292, 333);
 
     // Uncomment the line below to select a different bounding box
-    //bbox = selectROI(frame, false);
+    bbox = selectROI(frame, false);
 
     cout << "x:  " << to_string(bbox.x) << "   "
         << "y:  " << to_string(bbox.y) << "   "
