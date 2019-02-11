@@ -22,7 +22,7 @@
 /*/build/
 
 # openCV large libs
-#openCVLibrary344/src/sdk/
+openCVLibrary344/src/sdk/
 #*/src/main/jniLibs/
 app/src/main/obj/
 
