@@ -16,6 +16,7 @@ int main(int argc, char **argv)
     // vector <string> trackerTypes(types, std::end(types));
 
     // Create a tracker
+
     string trackerType = trackerTypes[3];
 
     Ptr<Tracker> tracker;
@@ -45,7 +46,11 @@ int main(int argc, char **argv)
     }
     #endif
     // Read video
+<<<<<<< HEAD
+    VideoCapture video("../../data_archive/Zhuge_Trim_Trim.mp4");
+=======
     VideoCapture video("song_Trim.mp4");
+>>>>>>> 63b127f827deb7f9831bc08fa967a53706c3286c
 
     // Exit if video is not opened
     if(!video.isOpened())
@@ -62,7 +67,15 @@ int main(int argc, char **argv)
     Rect2d bbox(334, 13, 292, 333);
 
     // Uncomment the line below to select a different bounding box
+<<<<<<< HEAD
     bbox = selectROI(frame, false);
+=======
+<<<<<<< HEAD
+    bbox = selectROI(frame, false);
+=======
+    //bbox = selectROI(frame, false);
+>>>>>>> 63b127f827deb7f9831bc08fa967a53706c3286c
+>>>>>>> add2c4919ffeb8ff3d82f467552a63a510b9911a
 
     cout << "x:  " << to_string(bbox.x) << "   "
         << "y:  " << to_string(bbox.y) << "   "

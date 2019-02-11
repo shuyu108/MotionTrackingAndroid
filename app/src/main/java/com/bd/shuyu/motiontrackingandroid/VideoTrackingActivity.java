@@ -17,6 +17,9 @@ import org.opencv.core.Rect2d;
 import org.opencv.core.Scalar;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
+
+import org.opencv.tracking.Tracker;
+
 import org.opencv.videoio.VideoCapture;
 
 public class VideoTrackingActivity  extends AppCompatActivity {
@@ -82,6 +85,8 @@ public class VideoTrackingActivity  extends AppCompatActivity {
 
         VideoCapture video = new VideoCapture("/storage/emulated/0/data/song_Trim.avi");
 
+        //Tracker tracker = new Tracker("TLD");
+
 
         if(!video.isOpened()){
 
@@ -105,6 +110,8 @@ public class VideoTrackingActivity  extends AppCompatActivity {
 
             double timer = (double) Core.getTickCount();
 
+
+            //double timer
 
 
 
