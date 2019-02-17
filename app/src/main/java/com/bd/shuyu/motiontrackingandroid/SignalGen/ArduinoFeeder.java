@@ -1,5 +1,6 @@
 package com.bd.shuyu.motiontrackingandroid.SignalGen;
 
+import android.content.Context;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
@@ -12,25 +13,32 @@ import com.bd.shuyu.motiontrackingandroid.R;
 
 public class ArduinoFeeder {
 
-
+    public static final String TAG = "AudioGen";
     // originally from http://marblemice.blogspot.com/2010/04/generate-and-play-tone-in-android.html
     // and modified by Steve Pomeroy <steve@staticfree.info>
     public static final int fps = 30;
     private static final float duration = (float)1/fps; // seconds
-    private static final int sampleRate = 8000;
-    private static final int numSamples = (int) (duration * sampleRate);
-    private static final double sample[] = new double[numSamples];
+    private static int sampleRate = 48000;
+    private static int numSamples = (int) (duration * sampleRate);
+    private static double sample[] = new double[numSamples];
     //private static final double freqOfTone = 440; // hz
 
-    //private static final byte generatedSnd[] = new byte[2 * numSamples];
-    private static final byte generatedSnd[] = new byte[numSamples];
-    public static final String TAG = "AudioGen";
+    private static byte generatedSnd[] = new byte[2 * numSamples];
+    //private static byte generatedSnd[] = new byte[numSamples];
 
 
+    public static void setSampleRate(int sr){
+        if(sampleRate == sr) return;
+
+        sampleRate = sr;
+        numSamples = (int) (duration * sampleRate);
+        sample = new double[numSamples];
+        generatedSnd = new byte[numSamples];
+    }
 
     public static void genTone(double freqOfTone, double loudness){
         short val = 0;
-        /*
+
         // fill out the array
         for (int i = 0; i < numSamples; ++i) {
             sample[i] = Math.sin(2 * Math.PI * i / (sampleRate/freqOfTone));
@@ -41,13 +49,13 @@ public class ArduinoFeeder {
         int idx = 0;
         for (final double dVal : sample) {
             // scale to maximum amplitude
-            final short val = (short) ((loudness * dVal * 32767));
+            val = (short) ((loudness * dVal * 32767));
             // in 16 bit wav PCM, first byte is the low order byte
             generatedSnd[idx++] = (byte) (val & 0x00ff);
             generatedSnd[idx++] = (byte) ((val & 0xff00) >>> 8);
         }
-        */
-        long sum = 0;
+        /*
+        //long sum = 0;
         for(int i = 0; i < numSamples; i++){
             //val = (short) (Math.sin(2 * Math.PI * freqOfTone * i / sampleRate)
             //        * 127 * loudness);
@@ -57,12 +65,12 @@ public class ArduinoFeeder {
             byte sp = (byte)(Math.sin(2 * Math.PI * freqOfTone * i / sampleRate)
                     * 127 * loudness + 127) ;
             generatedSnd[i] = sp;
-            sum += sp;
+            //sum += sp;
             //generatedSnd[2*i] = sp;
             //generatedSnd[2*i+1] = (byte) 0;
         }
-        Log.d(TAG, "GEN AVG:  " + (float) sum/generatedSnd.length);
-
+        //Log.d(TAG, "GEN AVG:  " + (float) sum/generatedSnd.length);
+        */
 
         //Log.d(TAG, "generatedLength: " + generatedSnd.length);
     }
@@ -70,7 +78,7 @@ public class ArduinoFeeder {
     public static void playSound(){
         final AudioTrack audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,
                 sampleRate, AudioFormat.CHANNEL_OUT_MONO,
-                AudioFormat.ENCODING_PCM_8BIT, generatedSnd.length,
+                AudioFormat.ENCODING_PCM_16BIT, generatedSnd.length,
                 AudioTrack.MODE_STATIC);
         //Log.d(TAG, "  " + audioTrack.getBufferSizeInFrames());
         //audioTrack.write(generatedSnd, 0, generatedSnd.length);
