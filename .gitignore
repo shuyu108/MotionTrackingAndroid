@@ -20,7 +20,7 @@
 
 # Built application files
 /*/build/
-
+/refs/*/obj
 # openCV large libs
 #openCVLibrary344/src/sdk/
 #*/src/main/jniLibs/
