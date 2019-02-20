@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1549216035 source:/Users/thgniyu/Desktop/MotionTrackingAndroid/refs/tracking_test/main.cpp
+	<opencv2/opencv.hpp>
+	<opencv2/tracking.hpp>
+	<opencv2/core/ocl.hpp>
+
