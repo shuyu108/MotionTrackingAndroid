@@ -48,7 +48,9 @@ int main(int argc, char **argv)
     // Read video
 
 
+
     VideoCapture video("Desktop/MotionTrackingAndroid/data_archive/Zhuge_Trim_trim.mp4");
+
 
     // Exit if video is not opened
     if(!video.isOpened())
