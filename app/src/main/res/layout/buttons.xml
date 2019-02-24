@@ -10,6 +10,10 @@
         android:layout_width="139dp"
         android:layout_height="124dp"
         android:text="Button"
-        tools:layout_editor_absoluteX="70dp"
-        tools:layout_editor_absoluteY="122dp" />
+        tools:layout_editor_absoluteX="161dp"
+        tools:layout_editor_absoluteY="64dp" />
+    <com.bd.shuyu.motiontrackingandroid.interface_regionSelection.RegionSelection
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/dragRect" />
 </android.support.constraint.ConstraintLayout>
