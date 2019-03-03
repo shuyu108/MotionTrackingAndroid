@@ -4,26 +4,32 @@
 	<Project>
 		<Option title="tracking_test" />
 		<Option pch_mode="2" />
-		<Option compiler="gcc" />
+		<Option compiler="clang" />
 		<Build>
 			<Target title="Debug">
 				<Option output="bin/Debug/tracking_test" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
-<<<<<<< HEAD
-				<Option compiler="gnu_gcc_compiler_64" />
-=======
-				<Option compiler="gnu_gcc_compiler_x64" />
->>>>>>> 63b127f827deb7f9831bc08fa967a53706c3286c
-				<Compiler>
-					<Add option="-g" />
-				</Compiler>
+				<Option compiler="clang" />
+				<Option projectCompilerOptionsRelation="0" />
+				<Option projectLinkerOptionsRelation="0" />
+				<Option projectIncludeDirsRelation="0" />
+				<Option projectResourceIncludeDirsRelation="0" />
+				<Option projectLibDirsRelation="0" />
+				<MakeCommands>
+					<Build command="" />
+					<CompileFile command="" />
+					<Clean command="" />
+					<DistClean command="" />
+					<AskRebuildNeeded command="" />
+					<SilentBuild command=" &gt; $(CMD_NULL)" />
+				</MakeCommands>
 			</Target>
 			<Target title="Release">
 				<Option output="bin/Release/tracking_test" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Release/" />
 				<Option type="1" />
-				<Option compiler="gcc" />
+				<Option compiler="clang" />
 				<Compiler>
 					<Add option="-O2" />
 				</Compiler>
