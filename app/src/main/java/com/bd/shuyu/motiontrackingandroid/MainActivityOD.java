@@ -63,8 +63,8 @@ public class MainActivityOD extends AppCompatActivity implements CvCameraViewLis
     }
     // Load a network.
     public void onCameraViewStarted(int width, int height) {
-        String proto = "/storage/emulated/0/data/MobileNetSSD_deploy.prototxt";
-        String weights = "/storage/emulated/0/data/MobileNetSSD_deploy.caffemodel";
+        String proto = getPath("MobileNetSSD_deploy.prototxt", this);
+        String weights = getPath("MobileNetSSD_deploy.caffemodel", this);
         Log.i(TAG, proto + "  " + weights);
         net = Dnn.readNetFromCaffe(proto,weights);
         Log.i(TAG, "Network loaded successfully");
