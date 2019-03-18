@@ -18,6 +18,9 @@ import org.opencv.imgproc.Imgproc;
 
 public class MainActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
 
+
+
+
     private static final String TAG = "MainActivity";
 
     static{
