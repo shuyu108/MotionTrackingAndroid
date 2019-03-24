@@ -29,9 +29,9 @@ public class TrackerKCF extends Tracker {
     //javadoc: TrackerKCF::create()
     public static TrackerKCF create()
     {
-        
+
         TrackerKCF retVal = TrackerKCF.__fromPtr__(create_0());
-        
+
         return retVal;
     }
 

@@ -13,6 +13,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+<<<<<<< HEAD
+=======
         <activity android:name=".MainActivityOD" android:screenOrientation="landscape">
 
             <intent-filter>
@@ -21,6 +23,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+>>>>>>> c9f72c2fc26d0e008dffba18e6dd72dcb73792ed
     </application>
 
 </manifest>

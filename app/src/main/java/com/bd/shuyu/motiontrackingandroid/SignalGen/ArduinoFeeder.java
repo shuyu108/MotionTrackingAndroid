@@ -9,8 +9,6 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import com.bd.shuyu.motiontrackingandroid.R;
-
 public class ArduinoFeeder {
 
     public static final String TAG = "AudioGen";
