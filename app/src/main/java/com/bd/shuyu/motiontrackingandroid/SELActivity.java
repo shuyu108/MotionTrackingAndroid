@@ -68,7 +68,7 @@ public class SELActivity extends AppCompatActivity implements CameraBridgeViewBa
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.camera_sel);
         final RegionSelection view = (RegionSelection) findViewById(R.id.dragRect);
 
         if (null != view) {

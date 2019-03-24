@@ -1,3 +1,4 @@
+/*
 package com.bd.shuyu.motiontrackingandroid;
 
 import android.graphics.Bitmap;
@@ -91,3 +92,4 @@ public class ObjectTrackerActivity extends AppCompatActivity {
 
 
 }
+*/
