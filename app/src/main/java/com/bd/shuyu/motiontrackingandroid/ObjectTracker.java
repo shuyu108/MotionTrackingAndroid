@@ -1,4 +1,5 @@
 /*
+
 package com.bd.shuyu.motiontrackingandroid;
 
 import android.graphics.Bitmap;
@@ -69,7 +70,7 @@ public class ObjectTrackerActivity extends AppCompatActivity {
 
         if (ok)
         {
-            // Tracking success : Draw the tracked object
+            // Track`ing success : Draw the tracked object
             rectangle(frame,pt1,pt2,new Scalar( 255, 0, 0 ), 5 );
         }
         else
@@ -92,4 +93,5 @@ public class ObjectTrackerActivity extends AppCompatActivity {
 
 
 }
+
 */
