@@ -17,7 +17,7 @@ int main(int argc, char **argv)
 
     // Create a tracker
 
-    string trackerType = trackerTypes[2];
+    string trackerType = trackerTypes[3];
 
     Ptr<Tracker> tracker;
 
@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 
 
 
-    VideoCapture video("Desktop/MotionTrackingAndroid/data_archive/Zhuge_Trim_trim.mp4");
+    VideoCapture video("../../data_archive/Zhuge_Trim_trim.mp4");
 
 
     // Exit if video is not opened
