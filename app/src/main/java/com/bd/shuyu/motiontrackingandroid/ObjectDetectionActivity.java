@@ -21,8 +21,8 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-public class MainActivityOD extends AppCompatActivity implements CvCameraViewListener2 {
-    static String TAG = "MainActivityOD";
+public class ObjectDetectionActivity extends AppCompatActivity implements CvCameraViewListener2 {
+    static String TAG = "ObjectDetectionActivity";
     // Initialize OpenCV manager.
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override

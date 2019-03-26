@@ -12,7 +12,7 @@ JNIEXPORT jint JNICALL Java_com_bd_shuyu_motiontrackingandroid_OpencvNativeCls_c
 
     retVal = (jint) conv;
     return retVal;
-  }
+  };
 
   int toGray(Mat img, Mat& gray){
 

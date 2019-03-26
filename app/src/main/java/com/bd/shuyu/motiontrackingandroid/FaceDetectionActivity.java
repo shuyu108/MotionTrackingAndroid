@@ -1,14 +1,11 @@
 package com.bd.shuyu.motiontrackingandroid;
-import android.app.Activity;
 
-import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceView;
-import android.widget.Toast;
 
-import com.bd.shuyu.motiontrackingandroid.R;
-import com.bd.shuyu.motiontrackingandroid.interface_regionSelection.RegionSelection_Cam;
+import com.bd.shuyu.motiontrackingandroid.OpencvNatives.OpencvNativeFaceDetection;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -17,42 +14,37 @@ import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.Point;
-import org.opencv.core.Scalar;
-import org.opencv.imgproc.Imgproc;
 
-import android.graphics.Rect;
+public class FaceDetectionActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
 
-public class SELActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
 
-    private static final String TAG = "MyActivity";
 
-   /* @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.buttons);
 
-        final RegionSelection view = (RegionSelection) findViewById(R.id.dragRect);
-
-        if (null != view) {
-            view.setOnUpCallback(new RegionSelection.OnUpCallback() {
-                @Override
-                public void onRectFinished(final Rect rect) {
-                    Toast.makeText(getApplicationContext(), "Rect is (" + rect.left + ", " + rect.top + ", " + rect.right + ", " + rect.bottom + ")",
-                            Toast.LENGTH_LONG).show();
-                }
-            });
-        }
-    }*/
-    //private static final String TAG = "MainActivity";
+    private static final String TAG = "FaceDetectionActivity";
 
     static{
         System.loadLibrary("MyLibs");
     }
+
+    /*
+    static {
+
+        System.loadLibrary("opencv_java3");
+
+        if(OpenCVLoader.initDebug()){
+            Log.d(TAG, "OpenCV successfully loaded");
+        }
+        else{
+            Log.d(TAG, "not loaded");
+        }
+    }
+    */
     Mat mRgba, mGray;
     JavaCameraView javaCameraView;
-    static Rect mRect;
 
+    /*
+    Dedicated for the onResume method
+     */
     BaseLoaderCallback mLoaderCallBack = new BaseLoaderCallback(this) {
         @Override
         public void onManagerConnected(int status) {
@@ -73,20 +65,8 @@ public class SELActivity extends AppCompatActivity implements CameraBridgeViewBa
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.camera_sel);
-        final RegionSelection_Cam view = (RegionSelection_Cam) findViewById(R.id.dragRect);
+        setContentView(R.layout.activity_camera);
 
-        if (null != view) {
-            view.setOnUpCallback(new RegionSelection_Cam.OnUpCallback() {
-                @Override
-                public void onRectFinished(final Rect rect) {
-                    Toast.makeText(getApplicationContext(), "Rect is (" + rect.left + ", " + rect.top + ", " + rect.right + ", " + rect.bottom + ")",
-                            Toast.LENGTH_LONG).show();
-                }
-            });
-        }
-        // Example of a call to a native method
-        //TextView tv = (TextView) findViewById(R.id.sample_text);
         javaCameraView = (JavaCameraView) findViewById(R.id.java_camera_view);
         javaCameraView.setVisibility(SurfaceView.VISIBLE);
         javaCameraView.setCvCameraViewListener(this);
@@ -103,6 +83,9 @@ public class SELActivity extends AppCompatActivity implements CameraBridgeViewBa
         super.onDestroy();
         if(javaCameraView!=null) javaCameraView.disableView();
     }
+    /*
+    Everytime the App resume, we need to call BaseLoaderCallback
+     */
     @Override
     protected void onResume(){
         super.onResume();
@@ -116,15 +99,15 @@ public class SELActivity extends AppCompatActivity implements CameraBridgeViewBa
         }
         //OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_4_0, this, mLoaderCallBack);
     }
+
     /**
      * A native method that is implemented by the 'native-lib' native library,
      * which is packaged with this application.
-     */
+    */
     //public native String stringFromJNI();
 
 
     //3 method for the listener
-
     @Override
     public void onCameraViewStarted(int w, int h){
         //we have 4 channels here
@@ -135,6 +118,7 @@ public class SELActivity extends AppCompatActivity implements CameraBridgeViewBa
 
 
     }
+
     @Override
     public void onCameraViewStopped(){
         mRgba.release();
@@ -143,22 +127,21 @@ public class SELActivity extends AppCompatActivity implements CameraBridgeViewBa
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame){
         mRgba = inputFrame.rgba();
-        //int debugInt = OpencvNativeFaceDetection.faceDetection(mRgba.getNativeObjAddr());
 
-        /*if(debugInt == 1){
+        int debugInt = OpencvNativeFaceDetection.faceDetection(mRgba.getNativeObjAddr());
+
+        if(debugInt == 1){
             Log.d(TAG, "faceDetection(): xml loading failed");
-        }*/
-
-        if(mRect != null){
-            Scalar roiColor = new Scalar(255, 0, 0);
-            Imgproc.rectangle(mRgba, new Point(mRect.left, mRect.top), new Point(mRect.right, mRect.bottom), roiColor, 2, 2);
         }
 
         return mRgba;
-    }
 
-    public static void setDrawingRect(Rect rt){
+        //OpencvNativeCls.cvtGray(mRgba.getNativeObjAddr(), mGray.getNativeObjAddr());
 
-        mRect = rt;
+        /*Mat rgbaT = mRgba.t();
+        Core.flip(mRgba.t(), rgbaT, 1);
+        Imgproc.resize(rgbaT, rgbaT, mRgba.size());
+        return rgbaT;*/
+
     }
 }

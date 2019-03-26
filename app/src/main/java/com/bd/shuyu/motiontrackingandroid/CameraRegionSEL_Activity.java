@@ -1,15 +1,12 @@
 package com.bd.shuyu.motiontrackingandroid;
-import android.app.Activity;
 
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.SurfaceView;
 import android.widget.Toast;
 
-import com.bd.shuyu.motiontrackingandroid.R;
-import com.bd.shuyu.motiontrackingandroid.interface_regionSelection.RegionSelection;
+import com.bd.shuyu.motiontrackingandroid.interface_regionSelection.RegionSelection_Cam;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -18,16 +15,20 @@ import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
 
+import android.graphics.Rect;
 
-public class SELActivity_orig extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
+public class CameraRegionSEL_Activity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
 
-    private static final String TAG = "MyActivity";
+    private static final String TAG = "Opencv_Camera";
 
    /* @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.buttons);
+        setContentView(R.layout.activity_sel);
 
         final RegionSelection view = (RegionSelection) findViewById(R.id.dragRect);
 
@@ -41,13 +42,20 @@ public class SELActivity_orig extends AppCompatActivity implements CameraBridgeV
             });
         }
     }*/
-    //private static final String TAG = "MainActivity";
+    //private static final String TAG = "FaceDetectionActivity";
 
     static{
         System.loadLibrary("MyLibs");
     }
-    Mat mRgba, mGray;
+
+    float scaleWIN2CAM_X = 0, scaleWIN2CAM_Y = 0;
+    int biasWIN2CAM_X = 0, biasWIN2CAM_Y = 0;
+
+    Mat mRgba;
+    RegionSelection_Cam camView;
     JavaCameraView javaCameraView;
+    static Rect mRect;
+
     BaseLoaderCallback mLoaderCallBack = new BaseLoaderCallback(this) {
         @Override
         public void onManagerConnected(int status) {
@@ -68,11 +76,11 @@ public class SELActivity_orig extends AppCompatActivity implements CameraBridgeV
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.camera_sel);
-        final RegionSelection view = (RegionSelection) findViewById(R.id.dragRect);
+        setContentView(R.layout.activity_camera_sel);
+        camView =  findViewById(R.id.dragRect);
 
-        if (null != view) {
-            view.setOnUpCallback(new RegionSelection.OnUpCallback() {
+        if (null != camView) {
+            camView.setOnUpCallback(new RegionSelection_Cam.OnUpCallback() {
                 @Override
                 public void onRectFinished(final Rect rect) {
                     Toast.makeText(getApplicationContext(), "Rect is (" + rect.left + ", " + rect.top + ", " + rect.right + ", " + rect.bottom + ")",
@@ -124,9 +132,18 @@ public class SELActivity_orig extends AppCompatActivity implements CameraBridgeV
     public void onCameraViewStarted(int w, int h){
         //we have 4 channels here
         mRgba = new Mat(h, w, CvType.CV_8UC4);
+        //Try to scale the cameraview to fit the screen
+        int screenH = camView.getHeight();
+        int screenW = camView.getWidth();
 
+        scaleWIN2CAM_X = (float) w / screenH /((float) w/h) ;
+        scaleWIN2CAM_Y = (float) h/screenH;
+        biasWIN2CAM_X = (int) - Math.floor((screenW - screenH * ((float) w/h)) / 2) ;
+        //biasWIN2CAM_Y = (int) Math.floor((screenH - h) / 2);
+        biasWIN2CAM_Y = 0;
+        Log.i(TAG, "window height is:  " + Integer.toString(screenH) + "  " +
+                Integer.toString(screenW) + "  "+ Integer.toString(w) + "  "+ Integer.toString(h));
 
-        //mGray = new Mat(h, w, CvType.CV_8UC1);
 
 
     }
@@ -144,7 +161,27 @@ public class SELActivity_orig extends AppCompatActivity implements CameraBridgeV
             Log.d(TAG, "faceDetection(): xml loading failed");
         }*/
 
-        return mRgba;
+        if(mRect != null){
+            Scalar roiColor = new Scalar(255, 0, 0);
+            Rect camRect = cvtRectWIN2CAM(mRect);
 
+            //Imgproc.rectangle(mRgba, new Point(mRect.left, mRect.top), new Point(mRect.right, mRect.bottom), roiColor, 2, 2);
+            Imgproc.rectangle(mRgba, new Point(camRect.left, camRect.top), new Point(camRect.right, camRect.bottom), roiColor, 2, 2);
+        }
+
+        return mRgba;
+    }
+
+    public static void setDrawingRect(Rect rt){
+
+        mRect = rt;
+    }
+
+    public Rect cvtRectWIN2CAM(Rect winRect){
+
+        return new Rect( (int)Math.floor(scaleWIN2CAM_X * winRect.left + biasWIN2CAM_X),
+                (int)Math.floor(scaleWIN2CAM_Y * winRect.top + biasWIN2CAM_Y),
+                (int)Math.floor(scaleWIN2CAM_X * winRect.right + biasWIN2CAM_X),
+                (int)Math.floor(scaleWIN2CAM_Y * winRect.bottom + biasWIN2CAM_Y));
     }
 }

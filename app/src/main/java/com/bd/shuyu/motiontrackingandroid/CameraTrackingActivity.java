@@ -1,11 +1,9 @@
 package com.bd.shuyu.motiontrackingandroid;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.SurfaceView;
-
-import com.bd.shuyu.motiontrackingandroid.OpencvNatives.OpencvNativeFaceDetection;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -14,37 +12,29 @@ import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.tracking.Tracker;
+import org.opencv.tracking.TrackerKCF;
 
-public class MainActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
+import com.bd.shuyu.motiontrackingandroid.OpencvNatives.OpencvNativeCls;
+import com.bd.shuyu.motiontrackingandroid.interface_regionSelection.RegionSelection_Cam;
+
+public class CameraTrackingActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2{
 
 
-
-
-    private static final String TAG = "MainActivity";
-
+    final String TAG = "OpenCV_Camera";
     static{
         System.loadLibrary("MyLibs");
     }
 
-    /*
-    static {
+    Tracker tracker = TrackerKCF.create();
+    Mat mRgba, mGray = new Mat();
 
-        System.loadLibrary("opencv_java3");
+    float scaleWIN2CAM_X, scaleWIN2CAM_Y;
+    int biasWIN2CAM_X, biasWIN2CAM_Y;
 
-        if(OpenCVLoader.initDebug()){
-            Log.d(TAG, "OpenCV successfully loaded");
-        }
-        else{
-            Log.d(TAG, "not loaded");
-        }
-    }
-    */
-    Mat mRgba, mGray;
     JavaCameraView javaCameraView;
+    RegionSelection_Cam camView;
 
-    /*
-    Dedicated for the onResume method
-     */
     BaseLoaderCallback mLoaderCallBack = new BaseLoaderCallback(this) {
         @Override
         public void onManagerConnected(int status) {
@@ -60,21 +50,20 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             }
         }
     };
-    // Used to load the 'native-lib' library on application startup.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_camera_sel);
+        camView = (RegionSelection_Cam) findViewById(R.id.dragRect);
 
-        // Example of a call to a native method
-        //TextView tv = (TextView) findViewById(R.id.sample_text);
         javaCameraView = (JavaCameraView) findViewById(R.id.java_camera_view);
         javaCameraView.setVisibility(SurfaceView.VISIBLE);
         javaCameraView.setCvCameraViewListener(this);
         //tv.setText(stringFromJNI());
         Log.d(TAG, "on Create: done");
     }
+
     @Override
     protected void onPause(){
         super.onPause();
@@ -85,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         super.onDestroy();
         if(javaCameraView!=null) javaCameraView.disableView();
     }
+
     /*
     Everytime the App resume, we need to call BaseLoaderCallback
      */
@@ -102,22 +92,23 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         //OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_4_0, this, mLoaderCallBack);
     }
 
-    /**
-     * A native method that is implemented by the 'native-lib' native library,
-     * which is packaged with this application.
-    */
-    //public native String stringFromJNI();
-
-
-    //3 method for the listener
     @Override
     public void onCameraViewStarted(int w, int h){
         //we have 4 channels here
         mRgba = new Mat(h, w, CvType.CV_8UC4);
 
 
-        //mGray = new Mat(h, w, CvType.CV_8UC1);
+        //Try to scale the cameraview to fit the screen
+        int screenH = camView.getHeight();
+        int screenW = camView.getWidth();
 
+        scaleWIN2CAM_X = w/screenW;
+        scaleWIN2CAM_Y = h/screenH;
+        biasWIN2CAM_X = (int) Math.floor((screenW - screenH * (w/h)) / 2);
+        biasWIN2CAM_Y = (int) Math.floor((screenH - h) / 2);
+
+        Log.i(TAG, "window height is:  " + Integer.toString(screenH) + "  " +
+                Integer.toString(screenW) + "  "+ Integer.toString(w) + "  "+ Integer.toString(h));
 
     }
 
@@ -127,23 +118,15 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     }
 
     @Override
-    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame){
+    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         mRgba = inputFrame.rgba();
 
-        int debugInt = OpencvNativeFaceDetection.faceDetection(mRgba.getNativeObjAddr());
+        //EXAMPLE, DELETE if NOT NEEDED
+        OpencvNativeCls.cvtGray(mRgba.getNativeObjAddr(), mGray.getNativeObjAddr());
+        mRgba = mGray;
 
-        if(debugInt == 1){
-            Log.d(TAG, "faceDetection(): xml loading failed");
-        }
 
         return mRgba;
-
-        //OpencvNativeCls.cvtGray(mRgba.getNativeObjAddr(), mGray.getNativeObjAddr());
-
-        /*Mat rgbaT = mRgba.t();
-        Core.flip(mRgba.t(), rgbaT, 1);
-        Imgproc.resize(rgbaT, rgbaT, mRgba.size());
-        return rgbaT;*/
-
     }
+
 }

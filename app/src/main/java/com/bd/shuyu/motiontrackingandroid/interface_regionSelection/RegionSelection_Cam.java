@@ -9,7 +9,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.bd.shuyu.motiontrackingandroid.SELActivity;
+import com.bd.shuyu.motiontrackingandroid.CameraRegionSEL_Activity;
 
 public class RegionSelection_Cam extends View {
     private Paint mRectPaint;
@@ -89,7 +89,7 @@ public class RegionSelection_Cam extends View {
 
                 mDrawRect = true;
 
-                SELActivity.setDrawingRect(new Rect(mStartX, mStartY, mEndX, mEndY));
+                CameraRegionSEL_Activity.setDrawingRect(new Rect(mStartX, mStartY, mEndX, mEndY));
 
                 break;
 
@@ -100,7 +100,7 @@ public class RegionSelection_Cam extends View {
                 }
                 invalidate();
 
-                SELActivity.setDrawingRect(null);
+                CameraRegionSEL_Activity.setDrawingRect(null);
 
                 break;
 

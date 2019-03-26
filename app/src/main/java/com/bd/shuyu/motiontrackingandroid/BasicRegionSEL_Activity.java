@@ -1,24 +1,18 @@
 package com.bd.shuyu.motiontrackingandroid;
 
-import android.app.AppComponentFactory;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.SurfaceView;
 import android.widget.Toast;
 
-import com.bd.shuyu.motiontrackingandroid.R;
 import com.bd.shuyu.motiontrackingandroid.interface_regionSelection.RegionSelection;
 
-import org.opencv.android.JavaCameraView;
-
-public class SELActivity_woCamera extends AppCompatActivity {
+public class BasicRegionSEL_Activity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.buttons);
+        setContentView(R.layout.activity_sel);
         final RegionSelection view = (RegionSelection) findViewById(R.id.dragRect);
 
         if (null != view) {
