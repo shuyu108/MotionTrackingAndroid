@@ -5,13 +5,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.bd.shuyu.motiontrackingandroid.interface_regionSelection.RegionSelection_Cam
+    <com.bd.shuyu.motiontrackingandroid.interface_regionSelection.RegionSelection
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/dragRect" />
+    <SurfaceView
+        android:layout_alignParentTop="true"
+        android:id="@+id/CameraView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+    <SurfaceView
+        android:layout_alignParentTop="true"
+        android:id="@+id/TransparentView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
     <org.opencv.android.JavaCameraView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/java_camera_view"
         />
+
 </android.support.constraint.ConstraintLayout>

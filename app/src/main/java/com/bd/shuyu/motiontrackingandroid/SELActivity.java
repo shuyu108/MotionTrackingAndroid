@@ -1,7 +1,6 @@
 package com.bd.shuyu.motiontrackingandroid;
 import android.app.Activity;
 
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -9,7 +8,7 @@ import android.view.SurfaceView;
 import android.widget.Toast;
 
 import com.bd.shuyu.motiontrackingandroid.R;
-import com.bd.shuyu.motiontrackingandroid.interface_regionSelection.RegionSelection;
+import com.bd.shuyu.motiontrackingandroid.interface_regionSelection.RegionSelection_Cam;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -18,7 +17,11 @@ import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
 
+import android.graphics.Rect;
 
 public class SELActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
 
@@ -48,6 +51,8 @@ public class SELActivity extends AppCompatActivity implements CameraBridgeViewBa
     }
     Mat mRgba, mGray;
     JavaCameraView javaCameraView;
+    static Rect mRect;
+
     BaseLoaderCallback mLoaderCallBack = new BaseLoaderCallback(this) {
         @Override
         public void onManagerConnected(int status) {
@@ -69,10 +74,10 @@ public class SELActivity extends AppCompatActivity implements CameraBridgeViewBa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.camera_sel);
-        final RegionSelection view = (RegionSelection) findViewById(R.id.dragRect);
+        final RegionSelection_Cam view = (RegionSelection_Cam) findViewById(R.id.dragRect);
 
         if (null != view) {
-            view.setOnUpCallback(new RegionSelection.OnUpCallback() {
+            view.setOnUpCallback(new RegionSelection_Cam.OnUpCallback() {
                 @Override
                 public void onRectFinished(final Rect rect) {
                     Toast.makeText(getApplicationContext(), "Rect is (" + rect.left + ", " + rect.top + ", " + rect.right + ", " + rect.bottom + ")",
@@ -144,7 +149,16 @@ public class SELActivity extends AppCompatActivity implements CameraBridgeViewBa
             Log.d(TAG, "faceDetection(): xml loading failed");
         }*/
 
-        return mRgba;
+        if(mRect != null){
+            Scalar roiColor = new Scalar(255, 0, 0);
+            Imgproc.rectangle(mRgba, new Point(mRect.left, mRect.top), new Point(mRect.right, mRect.bottom), roiColor, 2, 2);
+        }
 
+        return mRgba;
+    }
+
+    public static void setDrawingRect(Rect rt){
+
+        mRect = rt;
     }
 }

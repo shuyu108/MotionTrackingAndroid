@@ -109,16 +109,16 @@ public class RegionSelection extends View {
                 return true;
         }
 
-        //@Override
+        @Override
         public void onDraw(final Canvas canvas) {
                 super.onDraw(canvas);
 
-                if (mDrawRect) {
+                /*if (mDrawRect) {
                         canvas.drawRect(Math.min(mStartX, mEndX), Math.min(mStartY, mEndY),
                                 Math.max(mEndX, mStartX), Math.max(mEndY, mStartY), mRectPaint);
                         canvas.drawText("  (" + Math.abs(mStartX - mEndX) + ", " + Math.abs(mStartY - mEndY) + ")",
                                 Math.max(mEndX, mStartX), Math.max(mEndY, mStartY), mTextPaint);
-                }
+                }*/
         }
 
         //----------------------------------------------------------------------------------------------
