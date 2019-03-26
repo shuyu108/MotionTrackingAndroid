@@ -3,11 +3,15 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.hardware.Camera;
 import android.text.TextPaint;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.Display;
 import android.view.MotionEvent;
+import android.view.Surface;
+import android.view.SurfaceHolder;
 import android.view.View;
-
 //This code is for region selection (Fixed) when user touch the object they want to track
 
 public class RegionSelection extends View {
@@ -19,6 +23,7 @@ public class RegionSelection extends View {
         private int mEndY = 0;
         private boolean mDrawRect = false;
         private TextPaint mTextPaint = null;
+        public Camera camera;
 
         private OnUpCallback mCallback = null;
 
@@ -104,8 +109,8 @@ public class RegionSelection extends View {
                 return true;
         }
 
-        @Override
-        protected void onDraw(final Canvas canvas) {
+        //@Override
+        public void onDraw(final Canvas canvas) {
                 super.onDraw(canvas);
 
                 if (mDrawRect) {
@@ -115,4 +120,9 @@ public class RegionSelection extends View {
                                 Math.max(mEndX, mStartX), Math.max(mEndY, mStartY), mTextPaint);
                 }
         }
+
+        //----------------------------------------------------------------------------------------------
+        //@Override
+
+
 }

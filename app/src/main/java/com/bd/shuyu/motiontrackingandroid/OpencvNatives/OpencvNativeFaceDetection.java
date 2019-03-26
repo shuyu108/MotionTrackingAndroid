@@ -1,4 +1,4 @@
-package com.bd.shuyu.motiontrackingandroid;
+package com.bd.shuyu.motiontrackingandroid.OpencvNatives;
 
 public class OpencvNativeFaceDetection {
 
