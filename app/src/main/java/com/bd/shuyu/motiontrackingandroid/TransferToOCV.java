@@ -40,7 +40,7 @@ public class TransferToOCV extends AppCompatActivity implements SurfaceHolder.Ca
 
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.buttons);
+        setContentView(R.layout.ocv);
         cameraView = (SurfaceView)findViewById(R.id.CameraView);
         holder = cameraView.getHolder();
         holder.addCallback((SurfaceHolder.Callback) this);

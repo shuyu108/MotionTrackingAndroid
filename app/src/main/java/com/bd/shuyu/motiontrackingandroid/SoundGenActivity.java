@@ -26,8 +26,7 @@ public class SoundGenActivity extends AppCompatActivity {
 
     private static final String TAG = "SoundGenActivity";
     //Handler handler = new Handler();
-    static final double paramA2F_power = 360 / Math.log(4000/250);
-    static final double paramA2F_coeff = 250;
+
 
     boolean isJoyStickJustTouched = false;
     int ANGLE, STRENGTH;   // need class variables to pass params into Runnable
@@ -92,7 +91,7 @@ public class SoundGenActivity extends AppCompatActivity {
                 isJoyStickJustTouched = true;
                 t_buffered += (double) - 1/30;
             }
-       },30);
+        },30);
 
 
         //continuously check if the joystick is enabled or not
@@ -130,14 +129,17 @@ public class SoundGenActivity extends AppCompatActivity {
 
                     //if HANDS LEFT
                     if (!isJoyStickJustTouched
-                    && audioTrack.getPlayState() != AudioTrack.PLAYSTATE_STOPPED){
+                            && audioTrack.getPlayState() != AudioTrack.PLAYSTATE_STOPPED){
 
                         if(recenterSwitch.isChecked()){
 
                             audioTrack.stop();
                             audioTrack.flush();
                             t_buffered = 0;
-                            phase_sin.setVal(0);
+
+                            // * FOR wPHASE OPTION:
+                            //phase_sin.setVal(0);
+
                             //Log.d(TAG, "audioTrack disabled");
 
                             SLEEP_TIME_MILLISECOND = 100;
@@ -193,10 +195,10 @@ public class SoundGenActivity extends AppCompatActivity {
         }
     }
     public synchronized void genSound(double duration){
-        double freq = paramA2F_coeff * Math.exp(ANGLE / paramA2F_power);
+
 
         //FORMAT is PCM_8BIT !!
-        generateSnd = ArduinoFeeder.genTone(duration, freq, (double) STRENGTH / 100, phase_sin);
+        generateSnd = ArduinoFeeder.genTone(duration, ANGLE, (double) STRENGTH / 100, phase_sin);
         audioTrack.write(generateSnd, 0, generateSnd.length, AudioTrack.WRITE_BLOCKING);
 
     }

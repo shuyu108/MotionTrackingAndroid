@@ -1,3 +1,3 @@
-include ':app', ':soundgen'
+include ':app', ':soundgen', ':videotracking'
 include ':openCVLibrary344'
 include ':openCVLibrary344'
