@@ -34,7 +34,10 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
         System.loadLibrary("MyLibs");
     }
 
-    Tracker tracker = TrackerKCF.create();
+    final String[] trackerTypes = new String[]{"BOOSTING", "MIL", "KCF", "TLD","MEDIANFLOW", "GOTURN", "MOSSE", "CSRT"};
+    final String trackerType = trackerTypes[3];
+
+    Tracker tracker = null;
     Mat mRgba, mRgb = new Mat();
 
     float scaleWIN2CAM_X, scaleWIN2CAM_Y;
