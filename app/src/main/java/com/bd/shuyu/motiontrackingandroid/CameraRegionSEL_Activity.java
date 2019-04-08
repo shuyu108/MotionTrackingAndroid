@@ -79,6 +79,7 @@ public class CameraRegionSEL_Activity extends AppCompatActivity implements Camer
         setContentView(R.layout.activity_camera_sel);
         camView =  findViewById(R.id.dragRect);
 
+        //Create a Callback that invoked when releasing finger
         if (null != camView) {
             camView.setOnUpCallback(new RegionSelection_Cam.OnUpCallback() {
                 @Override

@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".CameraRegionSEL_Activity" android:screenOrientation="landscape">
+        <activity android:name=".CameraTrackingActivity" android:screenOrientation="landscape">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
