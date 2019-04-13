@@ -16,6 +16,7 @@ import android.widget.Switch;
 import java.lang.Double;
 
 import com.bd.shuyu.soundgen.SignalGen.ArduinoFeeder;
+import com.bd.shuyu.soundgen.SignalGen.ArduinoFeeder_dualTune_Linear;
 import com.bd.shuyu.soundgen.SignalGen.RetDouble;
 
 import io.github.controlwear.virtual.joystick.android.JoystickView;
