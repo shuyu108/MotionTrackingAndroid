@@ -13,6 +13,7 @@ import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.JavaCameraView;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.core.Core;
 import org.opencv.core.Rect2d;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -20,7 +21,13 @@ import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.tracking.Tracker;
+import org.opencv.tracking.TrackerBoosting;
+import org.opencv.tracking.TrackerCSRT;
 import org.opencv.tracking.TrackerKCF;
+import org.opencv.tracking.TrackerMIL;
+import org.opencv.tracking.TrackerMOSSE;
+import org.opencv.tracking.TrackerMedianFlow;
+import org.opencv.tracking.TrackerTLD;
 
 import com.bd.shuyu.motiontrackingandroid.OpencvNatives.OpencvNativeCls;
 import com.bd.shuyu.motiontrackingandroid.interface_regionSelection.RegionSelection_Cam;
@@ -34,8 +41,9 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
         System.loadLibrary("MyLibs");
     }
 
-    final String[] trackerTypes = new String[]{"BOOSTING", "MIL", "KCF", "TLD","MEDIANFLOW", "GOTURN", "MOSSE", "CSRT"};
-    final String trackerType = trackerTypes[3];
+    final String[] trackerTypes = new String[]{"BOOSTING", "MIL", "KCF", "TLD","MEDIANFLOW", "MOSSE", "CSRT"};
+    //GOTURN need additional environment for CNN
+    final String trackerType = trackerTypes[2];
 
     Tracker tracker = null;
     Mat mRgba, mRgb = new Mat();
@@ -112,8 +120,11 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
                     roiRect = new Rect2d(camRect.left, camRect.top,
                             camRect.right - camRect.left, camRect.bottom - camRect.top);
                     Imgproc.cvtColor(mRgba, mRgb, Imgproc.COLOR_RGBA2BGR);
-                    tracker = TrackerKCF.create();
+
+                    tracker = createTracker();
                     tracker.init(mRgb, roiRect);
+
+                    Log.d(TAG, trackerType + " " + (camRect.right-camRect.left) + "*" + (camRect.bottom-camRect.top) );
                     isTrackerStarted = true;
 
 
@@ -126,7 +137,7 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
         javaCameraView.setVisibility(SurfaceView.VISIBLE);
         javaCameraView.setCvCameraViewListener(this);
         //tv.setText(stringFromJNI());
-        Log.d(TAG, "on Create: done");
+        //og.d(TAG, "on Create: done");
     }
 
     @Override
@@ -148,7 +159,7 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
         super.onResume();
         System.loadLibrary("MyLibs");
         if(OpenCVLoader.initDebug()){
-            Log.d(TAG, "on Resume: OpenCV successfully loaded");
+            //Log.d(TAG, "on Resume: OpenCV successfully loaded");
             mLoaderCallBack.onManagerConnected(LoaderCallbackInterface.SUCCESS);
         }
         else{
@@ -189,7 +200,7 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
         //rgba = cv2.cvtColor(rgb_data, cv2.COLOR_RGB2RGBA)
 
         if(mRect != null){
-            Log.d(TAG, "onCameraFrame: Drawing");
+            //Log.d(TAG, "onCameraFrame: Drawing");
             ///Rect camRect = cvtRectWIN2CAM(mRect);
             camRect = cvtRectWIN2CAM(mRect);
 
@@ -198,15 +209,19 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
         }
 
         if(isTrackerStarted){
+            float timer = (float) Core.getTickCount();
             Imgproc.cvtColor(mRgba, mRgb, Imgproc.COLOR_RGBA2BGR);
-            Log.d(TAG, "onCameraFrame: Tracker Started");
+
             boolean ok = tracker.update(mRgb, roiRect);
+            float fps = (float)Core.getTickFrequency() / ((float)Core.getTickCount() - timer);
             if(ok){
                 Imgproc.rectangle(mRgba, new Point(roiRect.x, roiRect.y),
                         new Point(roiRect.x + roiRect.width, roiRect.y + roiRect.height),
                         roiColor, 2, 2);
+                Imgproc.putText(mRgba, "FPS: " + fps, new Point(100,80), 0, 1.5, new Scalar(0,0,255),2);
+                Log.d(TAG, "FPS: " + fps);
             }else{
-                Imgproc.putText(mRgba, "Tracking failure detected", new Point(100,80), 0, 0.75, new Scalar(0,0,255),2);
+                Imgproc.putText(mRgba, "Tracking failure detected", new Point(100,80), 0, 1.5, new Scalar(255,0,0),2);
             }
 
 
@@ -221,11 +236,33 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
     }
 
     public Rect cvtRectWIN2CAM(Rect winRect){
-        Log.d(TAG, "RectWIN2CAM: Converting");
+        //Log.d(TAG, "RectWIN2CAM: Converting");
         return new Rect( (int)Math.floor(scaleWIN2CAM_X * winRect.left + biasWIN2CAM_X),
                 (int)Math.floor(scaleWIN2CAM_Y * winRect.top + biasWIN2CAM_Y),
                 (int)Math.floor(scaleWIN2CAM_X * winRect.right + biasWIN2CAM_X),
                 (int)Math.floor(scaleWIN2CAM_Y * winRect.bottom + biasWIN2CAM_Y));
+    }
+
+    Tracker createTracker(){
+
+        switch(trackerType){
+
+            case "BOOSTING":   return TrackerBoosting.create();
+
+            case "MIL": return TrackerMIL.create();
+
+            case "KCF": return TrackerKCF.create();
+
+            case "TLD": return TrackerTLD.create();
+
+            case "MEDIANFLOW": return TrackerMedianFlow.create();
+
+            case "MOSSE": return TrackerMOSSE.create();
+
+            case "CSRT": return TrackerCSRT.create();
+
+            default: return TrackerKCF.create();
+        }
     }
 
 }
