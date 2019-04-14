@@ -100,7 +100,6 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
         camView = (RegionSelection_Tracking_Cam) findViewById(R.id.dragRect);
 
         //**********************
-        setContentView(R.layout.activity_soundgen);
         AudioManager am = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
         int sr = Integer.parseInt(am.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE));
         audioTrack = new AudioTrack(
