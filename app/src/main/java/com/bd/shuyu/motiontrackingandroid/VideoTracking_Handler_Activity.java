@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ImageView;
 
+import com.bd.shuyu.motiontrackingandroid.SignalGen.RetDouble;
 import com.bd.shuyu.motiontrackingandroid.ThreadOperation.BitmapTask;
 
 import org.opencv.android.OpenCVLoader;
@@ -21,15 +22,22 @@ import org.opencv.tracking.Tracker;
 import org.opencv.tracking.TrackerKCF;
 import org.opencv.videoio.VideoCapture;
 
+import android.media.AudioFormat;
+import android.media.AudioManager;
+import android.media.AudioTrack;
+import android.widget.Switch;
+
 import static android.os.Process.setThreadPriority;
 import static org.opencv.imgproc.Imgproc.putText;
 
 public class VideoTracking_Handler_Activity extends AppCompatActivity {
 
+    AudioTrack audioTrack;
+
     public final static int DECODE_STATE_COMPLETED = 1;
     final String TAG = "ObjectTrackerActivity";
     Tracker tracker= TrackerKCF.create();
-    //Tracker tracker = new Tracker("TLD");
+
     static{
         System.loadLibrary("MyLibs");
     }
@@ -42,8 +50,7 @@ public class VideoTracking_Handler_Activity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video);
-
-        videoView = (ImageView) findViewById(R.id.video_view);
+                videoView = (ImageView) findViewById(R.id.video_view);
 
         videoTracking();
     }

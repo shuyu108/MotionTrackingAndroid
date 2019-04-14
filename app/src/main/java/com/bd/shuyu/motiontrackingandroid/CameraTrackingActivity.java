@@ -29,7 +29,14 @@ import org.opencv.tracking.TrackerMOSSE;
 import org.opencv.tracking.TrackerMedianFlow;
 import org.opencv.tracking.TrackerTLD;
 
+import android.content.Context;
+import android.media.AudioFormat;
+import android.media.AudioManager;
+import android.media.AudioTrack;
+
 import com.bd.shuyu.motiontrackingandroid.OpencvNatives.OpencvNativeCls;
+import com.bd.shuyu.motiontrackingandroid.SignalGen.ArduinoFeeder;
+import com.bd.shuyu.motiontrackingandroid.SignalGen.RetDouble;
 import com.bd.shuyu.motiontrackingandroid.interface_regionSelection.RegionSelection_Cam;
 import com.bd.shuyu.motiontrackingandroid.interface_regionSelection.RegionSelection_Tracking_Cam;
 
@@ -40,6 +47,17 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
     static{
         System.loadLibrary("MyLibs");
     }
+
+    //****************************
+    int ANGLE, STRENGTH;   // need class variables to pass params into Runnable
+    byte generateSnd[];
+    final static float BUFFER_DELAY = 0.04f;
+    int SLEEP_TIME_MILLISECOND = 100;
+    RetDouble phase_sin = new RetDouble(0);
+    double t_buffered = 0 ;
+    AudioTrack audioTrack;
+    int rectCenterX,rectCenterY,screenCenterX,screenCenterY,maxStrength;
+    //****************************
 
     final String[] trackerTypes = new String[]{"BOOSTING", "MIL", "KCF", "TLD","MEDIANFLOW", "MOSSE", "CSRT"};
     //GOTURN need additional environment for CNN
@@ -81,6 +99,16 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
         setContentView(R.layout.activity_camera_sel_tracking);
         camView = (RegionSelection_Tracking_Cam) findViewById(R.id.dragRect);
 
+        //**********************
+        setContentView(R.layout.activity_soundgen);
+        AudioManager am = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+        int sr = Integer.parseInt(am.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE));
+        audioTrack = new AudioTrack(
+                AudioManager.STREAM_MUSIC, sr, AudioFormat.CHANNEL_OUT_MONO,
+                AudioFormat.ENCODING_PCM_8BIT, (int)Math.floor(sr * BUFFER_DELAY),
+                AudioTrack.MODE_STREAM);
+        //************************
+
         //Create a Callback that invoked when releasing finger
         if (null != camView) {
 
@@ -95,7 +123,13 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
                         tracker.clear();
                         isTrackerStarted = false;
                     }
+                    //***************************
+                    if(audioTrack.getPlayState() == AudioTrack.PLAYSTATE_PLAYING){
 
+                        audioTrack.stop();
+                        audioTrack.flush();
+                    }
+                    //***************************
                 }
             });
 
@@ -119,10 +153,13 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
                     //init tracker at this point
                     roiRect = new Rect2d(camRect.left, camRect.top,
                             camRect.right - camRect.left, camRect.bottom - camRect.top);
+
                     Imgproc.cvtColor(mRgba, mRgb, Imgproc.COLOR_RGBA2BGR);
 
                     tracker = createTracker();
                     tracker.init(mRgb, roiRect);
+
+
 
                     Log.d(TAG, trackerType + " " + (camRect.right-camRect.left) + "*" + (camRect.bottom-camRect.top) );
                     isTrackerStarted = true;
@@ -178,6 +215,12 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
         int screenH = camView.getHeight();
         int screenW = camView.getWidth();
 
+        //************************
+        screenCenterX=screenW/2;
+        screenCenterY=screenH/2;
+        maxStrength=(int)Math.sqrt(screenCenterY*screenCenterY+screenCenterX*screenCenterX);
+        //************************
+
         scaleWIN2CAM_X = (float) w / screenH /((float) w/h) ;
         scaleWIN2CAM_Y = (float) h/screenH;
         biasWIN2CAM_X = (int) - Math.floor((screenW - screenH * ((float) w/h)) / 2) ;
@@ -215,6 +258,29 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
             boolean ok = tracker.update(mRgb, roiRect);
             float fps = (float)Core.getTickFrequency() / ((float)Core.getTickCount() - timer);
             if(ok){
+                //****************************************
+                rectCenterX=(int)(roiRect.x+roiRect.width/2);
+                rectCenterY=(int)(roiRect.y+roiRect.height/2);
+                int angle=(int)Math.toDegrees(Math.atan2(rectCenterY-screenCenterY,rectCenterX-screenCenterX));
+                ANGLE = angle < 0 ? angle+360 : angle;
+                STRENGTH = (int)(100*Math.sqrt((rectCenterX-screenCenterX)*(rectCenterX-screenCenterX)+(rectCenterY-screenCenterY)*(rectCenterY-screenCenterY))/maxStrength);
+                double dur = BUFFER_DELAY / 2;
+                if(audioTrack.getPlayState() != AudioTrack.PLAYSTATE_PLAYING){
+
+                    audioTrack.play();
+                }
+                Thread gen_1 = new Thread(new GenSound(dur));
+                t_buffered += dur;
+                gen_1.start();
+
+                if(t_buffered < BUFFER_DELAY){
+                    Thread gen_2 = new Thread(new GenSound(dur));
+                    t_buffered += dur;
+                    gen_2.start();
+                }
+
+                t_buffered += (double) - 1/30;
+                //****************************************
                 Imgproc.rectangle(mRgba, new Point(roiRect.x, roiRect.y),
                         new Point(roiRect.x + roiRect.width, roiRect.y + roiRect.height),
                         roiColor, 2, 2);
@@ -229,7 +295,28 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
 
         return mRgba;
     }
+    //*****************************
+    public class GenSound implements Runnable{
 
+        double Dur;
+        public GenSound(double dur){
+            Dur = dur;
+        }
+        @Override
+        public void run(){
+
+            genSound(Dur);
+        }
+    }
+    public synchronized void genSound(double duration){
+
+
+        //FORMAT is PCM_8BIT !!
+        generateSnd = ArduinoFeeder.genTone(duration, ANGLE, (double) STRENGTH / 100, phase_sin);
+        audioTrack.write(generateSnd, 0, generateSnd.length, AudioTrack.WRITE_BLOCKING);
+
+    }
+    //******************************
     public static void setDrawingRect(Rect rt){
 
         mRect = rt;

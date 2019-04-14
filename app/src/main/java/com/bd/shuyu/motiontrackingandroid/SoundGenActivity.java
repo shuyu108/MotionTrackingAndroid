@@ -48,7 +48,6 @@ public class SoundGenActivity extends AppCompatActivity {
         final JoystickView joystick = (JoystickView) findViewById(R.id.JoyStick);
         AudioManager am = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
 
-
         int sr = Integer.parseInt(am.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE));
         Log.i(TAG, "device sample rate: " + sr);
 

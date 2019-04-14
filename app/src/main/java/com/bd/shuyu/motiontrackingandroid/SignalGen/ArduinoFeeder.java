@@ -9,10 +9,10 @@ public class ArduinoFeeder {
     public static final String TAG = "AudioGen";
     // originally from http://marblemice.blogspot.com/2010/04/generate-and-play-tone-in-android.html
     // and modified by Steve Pomeroy <steve@staticfree.info>
-    static final double paramA2F_angle_power = 360 / Math.log(4000/250);
-    static final double paramA2F_angle_coeff = 250;
-    static final double paramA2F_strength_power = Math.log(8000/4000);
-    static final double paramA2F_strength_coeff = 4000;
+    static final double paramA2F_angle_power = 360 / Math.log(2820/300);
+    static final double paramA2F_angle_coeff = 300;
+    static final double paramA2F_strength_power = Math.log(4000/3000);
+    static final double paramA2F_strength_coeff = 3000;
     public static final int fps = 30;
     private static double duration = 1/fps; // seconds
     private static int sampleRate = 48000;
