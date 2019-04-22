@@ -52,19 +52,20 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
     }
 
     //****************************
-    int ANGLE, STRENGTH;   // need class variables to pass params into Runnable
+    int ANGLE;   // need class variables to pass params into Runnable
+    double STRENGTH,maxStrength;
     byte generateSnd[];
-    final static float BUFFER_DELAY = 0.04f;
+    final static float BUFFER_DELAY = 0.02f;
     int SLEEP_TIME_MILLISECOND = 100;
     RetDouble phase_sin = new RetDouble(0);
     double t_buffered = 0 ;
     AudioTrack audioTrack;
-    int rectCenterX,rectCenterY,screenCenterX,screenCenterY,maxStrength;
+    int rectCenterX,rectCenterY,screenCenterX,screenCenterY;
     //****************************
 
     final String[] trackerTypes = new String[]{"BOOSTING", "MIL", "KCF", "TLD","MEDIANFLOW", "MOSSE", "CSRT"};
     //GOTURN need additional environment for CNN
-    final String trackerType = trackerTypes[4];
+    final String trackerType = trackerTypes[2];
 
     Tracker tracker = null;
     Mat mRgba, mRgb = new Mat();
@@ -79,6 +80,7 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
     static Rect mRect, camRect;
     static Rect2d roiRect;
     static Scalar roiColor = new Scalar(255, 0, 0);
+
 
     BaseLoaderCallback mLoaderCallBack = new BaseLoaderCallback(this) {
         @Override
@@ -222,17 +224,23 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
         int screenW = camView.getWidth();
 
         //************************
-        screenCenterX=screenW/2;
-        screenCenterY=screenH/2;
-        maxStrength=(int)Math.sqrt(screenCenterY*screenCenterY+screenCenterX*screenCenterX);
-        //************************
+//        screenCenterX=screenW/2;
+//        screenCenterY=screenH/2;
+        screenCenterX=w/2;
+        screenCenterY=h/2;
+
 
         scaleWIN2CAM_X = (float) w / screenH /((float) w/h) ;
         scaleWIN2CAM_Y = (float) h/screenH;
+
+        maxStrength=Math.sqrt(screenCenterY*screenCenterY+screenCenterX*screenCenterX);
+        //************************
+
+
         biasWIN2CAM_X = (int) - Math.floor((screenW - screenH * ((float) w/h)) / 2) ;
         //biasWIN2CAM_Y = (int) Math.floor((screenH - h) / 2);
         biasWIN2CAM_Y = 0;
-        Log.i(TAG, "window height is:  " + Integer.toString(screenH) + "  " +
+        Log.d(TAG, "window height is:  " + Integer.toString(screenH) + "  " +
                 Integer.toString(screenW) + "  "+ Integer.toString(w) + "  "+ Integer.toString(h));
 
     }
@@ -258,43 +266,49 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
         }
 
         if(isTrackerStarted){
+            //cvtRectWIN2CAM(mRect);
             float timer = (float) Core.getTickCount();
             Imgproc.cvtColor(mRgba, mRgb, Imgproc.COLOR_RGBA2BGR);
             //Log.d(TAG, "current counter: " + counter);
             boolean ok = tracker.update(mRgb, roiRect);
             float fps = (float)Core.getTickFrequency() / ((float)Core.getTickCount() - timer);
             if(ok){
+
                 //****************************************
                 rectCenterX=(int)(roiRect.x+roiRect.width/2);
                 rectCenterY=(int)(roiRect.y+roiRect.height/2);
-                int angle=(int)Math.toDegrees(Math.atan2(rectCenterY-screenCenterY,rectCenterX-screenCenterX));
+                int angle=(int)Math.toDegrees(Math.atan2(screenCenterY-rectCenterY,rectCenterX-screenCenterX));
                 ANGLE = angle < 0 ? angle+360 : angle;
-                STRENGTH = (int)(100*Math.sqrt((rectCenterX-screenCenterX)*(rectCenterX-screenCenterX)+(rectCenterY-screenCenterY)*(rectCenterY-screenCenterY))/maxStrength);
-                //double dur = BUFFER_DELAY / 2;
 
-                double dur = 1/fps;
-                Log.d(TAG, "duration:  " + dur);
+                STRENGTH = (float)(Math.sqrt((rectCenterX-screenCenterX)*(rectCenterX-screenCenterX)+(rectCenterY-screenCenterY)*(rectCenterY-screenCenterY))/maxStrength);
+                //double dur = BUFFER_DELAY;
+                double dur = 1/(fps);
+
                 if(audioTrack.getPlayState() != AudioTrack.PLAYSTATE_PLAYING){
 
                     audioTrack.play();
                 }
+                audioTrack.flush();
                 Thread gen_1 = new Thread(new GenSound(dur));
                 t_buffered += dur;
                 gen_1.start();
 
-                if(t_buffered < BUFFER_DELAY){
+                //Log.d(TAG,"ANGLE="+ANGLE+"("+rectCenterX+","+rectCenterY+")->("+screenCenterX+","+screenCenterY+")");
+                /*if(t_buffered < BUFFER_DELAY){
                     Thread gen_2 = new Thread(new GenSound(dur));
                     t_buffered += dur;
                     gen_2.start();
-                }
+                }*/
 
-                t_buffered += (double) - 1/fps;
+
+                //t_buffered += (double) - 1/fps;
+
                 //****************************************
                 Imgproc.rectangle(mRgba, new Point(roiRect.x, roiRect.y),
                         new Point(roiRect.x + roiRect.width, roiRect.y + roiRect.height),
                         roiColor, 2, 2);
                 Imgproc.putText(mRgba, "FPS: " + fps, new Point(100,80), 0, 1.5, new Scalar(0,0,255),2);
-                Log.d(TAG, "FPS: " + fps);
+                //Log.d(TAG, "FPS: " + fps);
             }else{
                 Imgproc.putText(mRgba, "Tracking failure detected", new Point(100,80), 0, 1.5, new Scalar(255,0,0),2);
             }
@@ -318,12 +332,15 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
         }
     }
     public synchronized void genSound(double duration){
-        counter += 1;
-        //Log.d(TAG, "current counter: " + counter);
+
+
+        counter+=1;
+        //Log.d(TAG, "counter is: " + counter);
 
         //FORMAT is PCM_8BIT !!
-        generateSnd = ArduinoFeeder.genTone(duration, ANGLE, (double) STRENGTH / 100, phase_sin);
-        audioTrack.write(generateSnd, 0, generateSnd.length, AudioTrack.WRITE_BLOCKING);
+        generateSnd = ArduinoFeeder.genTone(duration, ANGLE,  STRENGTH , phase_sin);
+        //audioTrack.write(generateSnd, 0, generateSnd.length, AudioTrack.WRITE_NON_BLOCKING);
+        audioTrack.write(generateSnd, 0, generateSnd.length,AudioTrack.WRITE_BLOCKING);
 
     }
     //******************************
