@@ -1,12 +1,19 @@
 package com.bd.shuyu.motiontrackingandroid;
 
+import android.content.Context;
 import android.graphics.Rect;
-
+import android.media.AudioFormat;
+import android.media.AudioManager;
+import android.media.AudioTrack;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.SurfaceView;
 import android.widget.Toast;
+
+import com.bd.shuyu.motiontrackingandroid.SignalGen.ArduinoFeeder;
+import com.bd.shuyu.motiontrackingandroid.SignalGen.RetDouble;
+import com.bd.shuyu.motiontrackingandroid.interface_regionSelection.RegionSelection_Tracking_Cam;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -14,10 +21,10 @@ import org.opencv.android.JavaCameraView;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Core;
-import org.opencv.core.Rect2d;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
+import org.opencv.core.Rect2d;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.tracking.Tracker;
@@ -29,21 +36,7 @@ import org.opencv.tracking.TrackerMOSSE;
 import org.opencv.tracking.TrackerMedianFlow;
 import org.opencv.tracking.TrackerTLD;
 
-import android.content.Context;
-import android.media.AudioFormat;
-import android.media.AudioManager;
-import android.media.AudioTrack;
-
-import com.bd.shuyu.motiontrackingandroid.OpencvNatives.OpencvNativeCls;
-import com.bd.shuyu.motiontrackingandroid.SignalGen.ArduinoFeeder;
-import com.bd.shuyu.motiontrackingandroid.SignalGen.RetDouble;
-import com.bd.shuyu.motiontrackingandroid.interface_regionSelection.RegionSelection_Cam;
-import com.bd.shuyu.motiontrackingandroid.interface_regionSelection.RegionSelection_Tracking_Cam;
-
-public class CameraTrackingActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2{
-
-    int counter = 0;
-
+public class CameraTrackingActivity_multiTime extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2{
 
 
     final String TAG = "OpenCV_Camera";
@@ -72,6 +65,7 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
     float scaleWIN2CAM_X, scaleWIN2CAM_Y;
     int biasWIN2CAM_X, biasWIN2CAM_Y;
     boolean isTrackerStarted = false;
+    boolean hasNewFrame = false;
 
     JavaCameraView javaCameraView;
     RegionSelection_Tracking_Cam camView;
@@ -119,9 +113,6 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
             camView.setOnDownCallback(new RegionSelection_Tracking_Cam.OnDownCallback() {
                 @Override
                 public void onRectStarted() {
-
-                    counter = 0;
-
 
                     if(isTrackerStarted){
 
@@ -180,7 +171,7 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
         javaCameraView.setVisibility(SurfaceView.VISIBLE);
         javaCameraView.setCvCameraViewListener(this);
         //tv.setText(stringFromJNI());
-        Log.d(TAG, "on Create: done");
+        //og.d(TAG, "on Create: done");
     }
 
     @Override
@@ -260,24 +251,28 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
         if(isTrackerStarted){
             float timer = (float) Core.getTickCount();
             Imgproc.cvtColor(mRgba, mRgb, Imgproc.COLOR_RGBA2BGR);
-            //Log.d(TAG, "current counter: " + counter);
+
             boolean ok = tracker.update(mRgb, roiRect);
             float fps = (float)Core.getTickFrequency() / ((float)Core.getTickCount() - timer);
             if(ok){
+
+
                 //****************************************
                 rectCenterX=(int)(roiRect.x+roiRect.width/2);
                 rectCenterY=(int)(roiRect.y+roiRect.height/2);
                 int angle=(int)Math.toDegrees(Math.atan2(rectCenterY-screenCenterY,rectCenterX-screenCenterX));
                 ANGLE = angle < 0 ? angle+360 : angle;
                 STRENGTH = (int)(100*Math.sqrt((rectCenterX-screenCenterX)*(rectCenterX-screenCenterX)+(rectCenterY-screenCenterY)*(rectCenterY-screenCenterY))/maxStrength);
-                //double dur = BUFFER_DELAY / 2;
-
-                double dur = 1/fps;
-                Log.d(TAG, "duration:  " + dur);
+                double dur = BUFFER_DELAY / 2;
                 if(audioTrack.getPlayState() != AudioTrack.PLAYSTATE_PLAYING){
 
                     audioTrack.play();
                 }
+
+                hasNewFrame = true;
+
+                genTrackingSignal();
+
                 Thread gen_1 = new Thread(new GenSound(dur));
                 t_buffered += dur;
                 gen_1.start();
@@ -288,7 +283,7 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
                     gen_2.start();
                 }
 
-                t_buffered += (double) - 1/fps;
+                t_buffered += (double) - 1/30;
                 //****************************************
                 Imgproc.rectangle(mRgba, new Point(roiRect.x, roiRect.y),
                         new Point(roiRect.x + roiRect.width, roiRect.y + roiRect.height),
@@ -304,6 +299,17 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
 
         return mRgba;
     }
+
+    //****************************************
+    //generate signal sound, until new Frame arrives
+    void genTrackingSignal(){
+
+
+
+
+    }
+
+
     //*****************************
     public class GenSound implements Runnable{
 
@@ -318,8 +324,7 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
         }
     }
     public synchronized void genSound(double duration){
-        counter += 1;
-        //Log.d(TAG, "current counter: " + counter);
+
 
         //FORMAT is PCM_8BIT !!
         generateSnd = ArduinoFeeder.genTone(duration, ANGLE, (double) STRENGTH / 100, phase_sin);
