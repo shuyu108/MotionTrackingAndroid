@@ -2,6 +2,10 @@ package com.bd.shuyu.motiontrackingandroid;
 
 import android.graphics.Rect;
 
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -40,7 +44,9 @@ import com.bd.shuyu.motiontrackingandroid.SignalGen.RetDouble;
 import com.bd.shuyu.motiontrackingandroid.interface_regionSelection.RegionSelection_Cam;
 import com.bd.shuyu.motiontrackingandroid.interface_regionSelection.RegionSelection_Tracking_Cam;
 
-public class CameraTrackingActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2{
+
+public class CameraTrackingEvaluateActivity extends AppCompatActivity
+        implements CameraBridgeViewBase.CvCameraViewListener2 {
 
     int counter = 0;
 
@@ -65,7 +71,7 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
 
     final String[] trackerTypes = new String[]{"BOOSTING", "MIL", "KCF", "TLD","MEDIANFLOW", "MOSSE", "CSRT"};
     //GOTURN need additional environment for CNN
-    final String trackerType = trackerTypes[5];
+    final String trackerType = trackerTypes[6];
 
     Tracker tracker = null;
     Mat mRgba, mRgb = new Mat();
@@ -80,6 +86,10 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
     static Rect mRect, camRect;
     static Rect2d roiRect;
     static Scalar roiColor = new Scalar(255, 0, 0);
+
+    private SensorManager mSensorManager;
+    private Sensor mLinAccSensor;
+    private SensorEventListener seListener;
 
 
     BaseLoaderCallback mLoaderCallBack = new BaseLoaderCallback(this) {
@@ -110,7 +120,7 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
         int sr = Integer.parseInt(am.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE));
         audioTrack = new AudioTrack(
                 AudioManager.STREAM_MUSIC, sr, AudioFormat.CHANNEL_OUT_MONO,
-                AudioFormat.ENCODING_PCM_8BIT, (int)Math.floor(sr * BUFFER_DELAY),
+                AudioFormat.ENCODING_PCM_8BIT, (int) Math.floor(sr * BUFFER_DELAY),
                 AudioTrack.MODE_STREAM);
         //************************
 
@@ -125,14 +135,14 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
                     counter = 0;
 
 
-                    if(isTrackerStarted){
+                    if (isTrackerStarted) {
 
                         //RESET the State of the Tracker
                         tracker.clear();
                         isTrackerStarted = false;
                     }
                     //***************************
-                    if(audioTrack.getPlayState() == AudioTrack.PLAYSTATE_PLAYING){
+                    if (audioTrack.getPlayState() == AudioTrack.PLAYSTATE_PLAYING) {
 
                         audioTrack.stop();
                         audioTrack.flush();
@@ -168,8 +178,7 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
                     tracker.init(mRgb, roiRect);
 
 
-
-                    Log.d(TAG, trackerType + " " + (camRect.right-camRect.left) + "*" + (camRect.bottom-camRect.top) );
+                    Log.d(TAG, trackerType + " " + (camRect.right - camRect.left) + "*" + (camRect.bottom - camRect.top));
                     isTrackerStarted = true;
 
 
@@ -181,27 +190,14 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
         javaCameraView = (JavaCameraView) findViewById(R.id.java_camera_view);
         javaCameraView.setVisibility(SurfaceView.VISIBLE);
         javaCameraView.setCvCameraViewListener(this);
-        //tv.setText(stringFromJNI());
-        Log.d(TAG, "on Create: done");
-    }
 
-    @Override
-    protected void onPause(){
-        super.onPause();
-        if(javaCameraView!=null) javaCameraView.disableView();
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mLinAccSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
     }
     @Override
-    protected void onDestroy(){
-        super.onDestroy();
-        if(javaCameraView!=null) javaCameraView.disableView();
-    }
-
-    /*
-    Everytime the App resume, we need to call BaseLoaderCallback
-     */
-    @Override
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
+
         System.loadLibrary("MyLibs");
         if(OpenCVLoader.initDebug()){
             //Log.d(TAG, "on Resume: OpenCV successfully loaded");
@@ -211,9 +207,36 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
             Log.d(TAG, "on Resume: not loaded");
         }
         //OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_4_0, this, mLoaderCallBack);
+        seListener = new SensorEventListener() {
+            @Override
+            public void onSensorChanged(SensorEvent e) {
+
+                Log.i(TAG, "Sensor_measured_movement: " + e.values[0] + " " + e.values[1] + " " + e.values[2]);
+
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+
+            }
+        };
+
+
+        mSensorManager.registerListener(seListener, mLinAccSensor, SensorManager.SENSOR_DELAY_UI);
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(javaCameraView!=null) javaCameraView.disableView();
+        mSensorManager.unregisterListener(seListener);
     }
 
     @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        if(javaCameraView!=null) javaCameraView.disableView();
+    }
     public void onCameraViewStarted(int w, int h){
         //we have 4 channels here
         mRgba = new Mat(h, w, CvType.CV_8UC3);
@@ -277,6 +300,9 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
                 //****************************************
                 rectCenterX=(int)(roiRect.x+roiRect.width/2);
                 rectCenterY=(int)(roiRect.y+roiRect.height/2);
+
+                Log.d(TAG, "Camera_measured_movement: " + (rectCenterX-screenCenterX) + " " + (screenCenterY-rectCenterY) );
+
                 int angle=(int)Math.toDegrees(Math.atan2(screenCenterY-rectCenterY,rectCenterX-screenCenterX));
                 ANGLE = angle < 0 ? angle+360 : angle;
 
@@ -341,7 +367,6 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
         generateSnd = ArduinoFeeder.genTone(duration, ANGLE,  STRENGTH , phase_sin);
         //audioTrack.write(generateSnd, 0, generateSnd.length, AudioTrack.WRITE_NON_BLOCKING);
         audioTrack.write(generateSnd, 0, generateSnd.length,AudioTrack.WRITE_BLOCKING);
-
     }
     //******************************
     public static void setDrawingRect(Rect rt){
@@ -378,5 +403,7 @@ public class CameraTrackingActivity extends AppCompatActivity implements CameraB
             default: return TrackerKCF.create();
         }
     }
+
+
 
 }
